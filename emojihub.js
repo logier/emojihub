@@ -40,33 +40,18 @@ export class TextMsg extends plugin {
                 {
                     reg: '^#?相册|图库$',   
                     fnc: '自定义'  
-                },
+                }
             ],
-            name: '戳一戳',
-            dsc: '戳一戳机器人触发效果',
-            event: 'notice.group.poke',
-            priority: 5000,
-            rule: [
-                {
-                    fnc: 'emojihub'
-                    }
-            ],
-            name: '随机回复',
-            dsc: '戳一戳机器人触发效果',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    fnc: '随机回复'
-                    }
-            ]
-
         })
 
     }
 
+    
+
+    
+
     async 自定义(e) {
-        const dir = '/path/to/your/gallery'; // 改成你的文件夹路径
+        const dir = 'D:/BaiduNetdiskDownload/Edgedownload'; // 改成你的文件夹路径
         const excludeDirs = ['long-emoji', 'long-emoji2'];  // 你想要排除的文件夹
         const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
         let files = [];
@@ -87,60 +72,22 @@ export class TextMsg extends plugin {
         })(dir);
     
         // 从文件列表中随机选择一个文件
-        const file = files[Math.floor(Math.random() * files.length)];
+        // const file = files[Math.floor(Math.random() * files.length)];
     
         // 获取文件夹名和文件名
-        const folderName = path.dirname(file).split(path.sep).pop();
-        const fileName = path.basename(file);
+        // const folderName = path.dirname(file).split(path.sep).pop();
+        // const fileNameWithoutExt = path.basename(file, path.extname(file));
     
         // 构造消息
-        const message = `文件夹：${folderName}\n文件名：${fileName}`;
+        // const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
     
-        e.reply([segment.text(message), segment.image(file)]);
+        e.reply([segment.image(file)]);
     
         return true;
     }
+    
 
-    async 随机回复(e) {
-        const dir = './resources/emojihub';
-        const excludeDirs = ['long-emoji', 'long-emoji2'];  // 你想要排除的文件夹
-        const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
-        let files = [];
     
-        // 获取文件夹及其子文件夹下的所有文件
-        (function getFiles(currentDir) {
-            fs.readdirSync(currentDir).forEach(file => {
-                const filePath = path.join(currentDir, file);
-                const stat = fs.statSync(filePath);
-                if (stat.isDirectory()) {
-                    if (!excludeDirs.includes(file)) {
-                        getFiles(filePath);
-                    }
-                } else if (fileTypeRegex.test(filePath)) {
-                    files.push(filePath);
-                }
-            });
-        })(dir);
-    
-        // 生成一个0到1之间的随机数
-        const randomProbability = Math.random();
-    
-        // 如果随机数大于0.1（或者你想要的概率），则回复
-        if (randomProbability < 0.1) {
-            // 生成一个1到10秒（或者你想要的延迟范围）的随机延迟
-            const randomDelay = Math.floor(Math.random() * 10) + 1;
-    
-            // 使用setTimeout函数来实现延迟
-            setTimeout(async () => {
-                // 从文件列表中随机选择一个文件
-                const file = files[Math.floor(Math.random() * files.length)];
-    
-                e.reply([segment.image(file)]);
-            }, randomDelay * 1000);
-        }
-    
-        return true;
-    }
     
     
 
@@ -178,7 +125,7 @@ export class TextMsg extends plugin {
 
     
     async capoo(e) {
-        const dir = './resources/emojihub/capoo-emoji';
+        const dir = './resources/emojihub/capoo-emoji/';
         const baseUrl = 'https://gitee.com/logier/emojihub/raw/main/capoo-emoji/capoo';  // 基础URL
         const max = 456;  // 图片数量
         let filePath;
@@ -199,6 +146,7 @@ export class TextMsg extends plugin {
             // 从URL列表中随机选择一个URL
             filePath = urls[Math.floor(Math.random() * urls.length)];
         }
+
     
         e.reply([segment.image(filePath)]);
     
@@ -312,5 +260,9 @@ export class TextMsg extends plugin {
     }
 
 
+
+    
     
 }
+
+
