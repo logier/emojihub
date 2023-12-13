@@ -1,5 +1,15 @@
 import fs from 'fs';
 import path from 'path';
+import schedule from 'node-schedule'
+
+// 定时发送时间，采用 Cron 表达式，当前默认为每小时推送一次
+const time = '0 0 */1 * * ?'
+
+// 指定定时发送的群号
+const groupList = ['123456']
+
+// 是否开启定时推送，默认为 false
+const isAutoPush = false
 
 
 
@@ -38,11 +48,14 @@ export class TextMsg extends plugin {
                     fnc: '小黑子'  
                 },
                 {
-                    reg: '^#?相册|图库$',   
+                    reg: '^#?相册|图库|画廊$',   
                     fnc: '自定义'  
                 }
+                
             ],
+            
         })
+        this.autoTask();
 
     }
 
@@ -50,9 +63,9 @@ export class TextMsg extends plugin {
 
     
 
-    async 自定义(e) {
-        const dir = 'D:/BaiduNetdiskDownload/Edgedownload'; // 改成你的文件夹路径
-        const excludeDirs = ['long-emoji', 'long-emoji2'];  // 你想要排除的文件夹
+    async 自定义(e, isAuto = 0) {
+        const dir = '/path/yo/your/gallery/'; // 改成你的文件夹路径
+        const excludeDirs = ['xxxxx', 'xxxxx'];  // 你想要排除的文件夹
         const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
         let files = [];
     
@@ -72,28 +85,42 @@ export class TextMsg extends plugin {
         })(dir);
     
         // 从文件列表中随机选择一个文件
-        // const file = files[Math.floor(Math.random() * files.length)];
+        const file = files[Math.floor(Math.random() * files.length)];
     
         // 获取文件夹名和文件名
-        // const folderName = path.dirname(file).split(path.sep).pop();
-        // const fileNameWithoutExt = path.basename(file, path.extname(file));
+        const folderName = path.dirname(file).split(path.sep).pop();
+        const fileNameWithoutExt = path.basename(file, path.extname(file));
     
         // 构造消息
-        // const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
+        const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
     
-        e.reply([segment.image(file)]);
+        e.reply([`分类：${folderName}\nPid：${fileNameWithoutExt}`, segment.image(file)]);
     
         return true;
     }
     
 
-    
+        /**
+     * 定时任务
+     */
+        autoTask() {
+            if (isAutoPush) {
+                schedule.scheduleJob(time, () => {
+                    logger.info('[相册]：开始自动推送...');
+                    for (let i = 0; i < groupList.length; i++) {
+                        let group = Bot.pickGroup(groupList[i]);
+                        自定义(group, 1); // 可以把这里的自定义改为emojihub、capoo等等
+                        common.sleep(1000);
+                    }
+                });
+            }
+        }
     
     
 
     
     async emojihub(e) {
-        const dir = './resources/emojihub';
+        const dir = './resources/emojihub'; //推荐吧emojihub下载，然后放到resources文件夹内
         const excludeDirs = ['long-emoji', 'long-emoji2'];  // 你想要排除的文件夹
         const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
         let files = [];
