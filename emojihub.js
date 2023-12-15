@@ -8,8 +8,8 @@ import path from 'path';
 export class TextMsg extends plugin {
     constructor() {
         super({
-            name: '测试插件', 
-            dsc: '这是一个基础的插件示例',            
+            name: 'emojihub', 
+            dsc: '发送表情包',            
             event: 'message',  
             priority: 6,   
             rule: [
@@ -28,7 +28,7 @@ export class TextMsg extends plugin {
                     reg: '^#?黑白|黑白表情包$',   
                     fnc: '黑白'  
                 },                {
-                    reg: '^#?龙图|long|龙$',   
+                    reg: '^#龙图|#long|#龙$',   
                     fnc: '龙图'  
                 },                {
                     reg: '^#?柴郡|chaiq$',   
@@ -76,15 +76,10 @@ export class TextMsg extends plugin {
     
         // 从文件列表中随机选择一个文件
         const file = files[Math.floor(Math.random() * files.length)];
-    
-        // 获取文件夹名和文件名
-        const folderName = path.dirname(file).split(path.sep).pop();
-        const fileNameWithoutExt = path.basename(file, path.extname(file));
-    
+
         // 构造消息
-        const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
     
-        e.reply([`分类：${folderName}\nPid：${fileNameWithoutExt}`, segment.image(file)]);
+        e.reply(segment.image(file));
     
         return true;
     }

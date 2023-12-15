@@ -5,11 +5,11 @@ import { segment } from 'oicq'
 import fs from 'fs';
 import path from 'path';
 
-// 定时发送时间，采用 Cron 表达式，当前默认为每半小时推送一次
+// 定时发送时间，采用 Cron 表达式，当前默认为三十分钟推送一次
 const time = '0 0/30 * * * ? '
 
 // 指定定时发送的群号
-const groupList = ['123456']
+const groupList = ['123456', '78910']
 
 // 是否开启定时推送，默认为 false
 const isAutoPush = false
@@ -65,19 +65,21 @@ async function push自定义(e, isAuto = 0) {
   })(dir);
 
   // 从文件列表中随机选择一个文件
-  const file = files[Math.floor(Math.random() * files.length)];
+  const picture = files[Math.floor(Math.random() * files.length)];
 
   // 获取文件夹名和文件名
-  const folderName = path.dirname(file).split(path.sep).pop();
-  const fileNameWithoutExt = path.basename(file, path.extname(file));
+  const folderName = path.dirname(picture).split(path.sep).pop();
+  const pictureNameWithoutExt = path.basename(picture, path.extname(picture));
 
   // 构造消息
-  const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
+  let maxLabelLength = Math.max('分类'.length, 'Pid'.length);
+  let fenlei = `分类${' '.repeat(maxLabelLength - '分类'.length)}：${folderName}\nPid${' '.repeat(maxLabelLength - 'Pid'.length)} ：${pictureNameWithoutExt}`;
+
 
   if (isAuto) {
-    e.sendMsg(message ,segment.image(file))
+    e.sendMsg([fenlei, segment.image(picture)])
   } else {
-    e.reply(segment.image(file))
+    e.reply([fenlei, segment.image(picture)])
   }
 }
 
