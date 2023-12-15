@@ -1,15 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import schedule from 'node-schedule'
 
-// 定时发送时间，采用 Cron 表达式，当前默认为每小时推送一次
-const time = '0 0 */1 * * ?'
-
-// 指定定时发送的群号
-const groupList = ['123456']
-
-// 是否开启定时推送，默认为 false
-const isAutoPush = false
 
 
 
@@ -48,14 +39,13 @@ export class TextMsg extends plugin {
                     fnc: '小黑子'  
                 },
                 {
-                    reg: '^#?相册|图库|画廊$',   
+                    reg: '^#?相册|图库$',   
                     fnc: '自定义'  
                 }
                 
             ],
             
         })
-        this.autoTask();
 
     }
 
@@ -63,9 +53,9 @@ export class TextMsg extends plugin {
 
     
 
-    async 自定义(e, isAuto = 0) {
-        const dir = '/path/yo/your/gallery/'; // 改成你的文件夹路径
-        const excludeDirs = ['xxxxx', 'xxxxx'];  // 你想要排除的文件夹
+    async 自定义(e) {
+        const dir = '/home/gallery'; // 改成你的文件夹路径
+        const excludeDirs = ['不想要的文件夹1', '不想要的文件夹2'];  // 你想要排除的文件夹
         const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
         let files = [];
     
@@ -100,27 +90,12 @@ export class TextMsg extends plugin {
     }
     
 
-        /**
-     * 定时任务
-     */
-        autoTask() {
-            if (isAutoPush) {
-                schedule.scheduleJob(time, () => {
-                    logger.info('[相册]：开始自动推送...');
-                    for (let i = 0; i < groupList.length; i++) {
-                        let group = Bot.pickGroup(groupList[i]);
-                        自定义(group, 1); // 可以把这里的自定义改为emojihub、capoo等等
-                        common.sleep(1000);
-                    }
-                });
-            }
-        }
     
     
 
     
     async emojihub(e) {
-        const dir = './resources/emojihub'; //推荐吧emojihub下载，然后放到resources文件夹内
+        const dir = './resources/emojihub';
         const excludeDirs = ['long-emoji', 'long-emoji2'];  // 你想要排除的文件夹
         const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
         let files = [];

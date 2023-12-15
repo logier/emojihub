@@ -1,0 +1,99 @@
+import plugin from '../../lib/plugins/plugin.js'
+import common from '../../lib/common/common.js'
+import schedule from 'node-schedule'
+import { segment } from 'oicq'
+import fs from 'fs';
+import path from 'path';
+
+// 定时发送时间，采用 Cron 表达式，当前默认为每半小时推送一次
+const time = '0 0/30 * * * ? '
+
+// 指定定时发送的群号
+const groupList = ['123456']
+
+// 是否开启定时推送，默认为 false
+const isAutoPush = false
+
+autoTask()
+
+export class example extends plugin {
+  constructor() {
+    super({
+      name: '定时发图',
+      dsc: '定时发图',
+      event: 'message',
+      priority: 5000,
+      rule: [
+        {
+          reg: '^#定时发图$',
+          fnc: '自定义'
+        }
+      ]
+    })
+  }
+
+  async 自定义(e) {
+    push自定义(e)
+  }
+}
+
+/**
+ * 推送日历
+ * @param e oicq传递的事件参数e
+ */
+
+
+async function push自定义(e, isAuto = 0) {
+  const dir = '/home/gallery'; // 改成你的文件夹路径
+  const excludeDirs = ['不想要的文件夹1', '不想要的文件夹2'];  // 你想要排除的文件夹
+  const fileTypeRegex = /\.(jpg|jpeg|png|gif|webp)$/;
+  let files = [];
+
+  // 获取文件夹及其子文件夹下的所有文件
+  (function getFiles(currentDir) {
+      fs.readdirSync(currentDir).forEach(file => {
+          const filePath = path.join(currentDir, file);
+          const stat = fs.statSync(filePath);
+          if (stat.isDirectory()) {
+              if (!excludeDirs.includes(file)) {
+                  getFiles(filePath);
+              }
+          } else if (fileTypeRegex.test(filePath)) {
+              files.push(filePath);
+          }
+      });
+  })(dir);
+
+  // 从文件列表中随机选择一个文件
+  const file = files[Math.floor(Math.random() * files.length)];
+
+  // 获取文件夹名和文件名
+  const folderName = path.dirname(file).split(path.sep).pop();
+  const fileNameWithoutExt = path.basename(file, path.extname(file));
+
+  // 构造消息
+  const message = `分类：${folderName}\nPid：${fileNameWithoutExt}`;
+
+  if (isAuto) {
+    e.sendMsg(message ,segment.image(file))
+  } else {
+    e.reply(segment.image(file))
+  }
+}
+
+
+/**
+ * 定时任务
+ */
+function autoTask() {
+  if (isAutoPush) {
+    schedule.scheduleJob(time, () => {
+      logger.info('[定时发图]：开始自动推送...')
+      for (let i = 0; i < groupList.length; i++) {
+        let group = Bot.pickGroup(groupList[i])
+        push自定义(group, 1)
+        common.sleep(1000)
+      }
+    })
+  }
+}
