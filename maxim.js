@@ -1,39 +1,357 @@
-import plugin from '../../../lib/plugins/plugin.js'
+import puppeteer from "puppeteer";
+import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+
+const 毛玻璃样式 = true 
+const imageUrls = [
+    '/home/gallery', //横图
+    // 添加更多的 URL...
+];
+
+
+const config = {
+    图片样式: '竖图样式' // 默认为竖图样式，可改为竖图样式\横图样式\无黑框横图样式
+};
+
+let 提示词颜表情 = true;
+
+let emojis = 提示词颜表情 ? ["ヾ(≧▽≦*)o", "φ(*￣0￣)", "q(≧▽≦q)", "ψ(｀∇´)ψ ​​", "（￣︶￣）↗　", "*^____^*", "(～￣▽￣)～", "( •̀ ω •́ )✧", "[]~(￣▽￣)~*", "φ(゜▽゜*)♪"] : [""];
 
 export class TextMsg extends plugin {
     constructor() {
         super({
-            name: '测试插件', // 插件名称
-            dsc: '这是一个基础的插件示例',  // 插件描述            
+            name: '图片一言', // 插件名称
+            dsc: '发送带有图片的一言',  // 插件描述            
             event: 'message',  // 更多监听事件请参考下方的 Events
             priority: 6,   // 插件优先度，数字越小优先度越高
             rule: [
                 {
-                    reg: '^#测试回复$',   // 正则表达式,有关正则表达式请自行百度
+                    reg: '^#?test$',   // 正则表达式,有关正则表达式请自行百度
                     fnc: 'test'  // 执行方法
-                }
+                },
+                {
+                    reg: '^#?一言$',
+                    fnc: '一言'
+                  },
+                  {
+                    reg: '^#?人间$',
+                    fnc: '人间'
+                  },
+                  {
+                    reg: '^#?毒鸡汤$',
+                    fnc: '毒鸡汤'
+                  },
+                  {
+                    reg: '^#?舔狗日记$',
+                    fnc: '舔狗日记'
+                  },
+                  {
+                    reg: '^#?社会语录$',
+                    fnc: '社会语录'
+                  },
+                  {
+                    reg: '^#?骚话$',
+                    fnc: '骚话'
+                  },
+                  {
+                    reg: '^#?发病$',
+                    fnc: '发病'
+                  },
+                  {
+                    reg: '^#?烧脑$',
+                    fnc: '烧脑'
+                  },
+                  {
+                    reg: '^#?kfc$',
+                    fnc: 'kfc'
+                  },
             ]
         })
 
     }
     
-
     async test(e) {
-        // 引用回复
-            
+        const content = "这是内容";
+        const source = "这是来源";
+
         
-
-        (async () => {
-          const browser = await puppeteer.launch();
-          const page = await browser.newPage();
-          await page.goto('https://logier.icu');
-          await page.screenshot({path: 'example.png'});
+    
+        await applyStyle(e, content, source);
+    }
+    async 一言(e) {
+        const response = await fetch('https://v1.hitokoto.cn');
+        const data = await response.json();
+        const content = data.hitokoto;
+        const source = data.from;
+        logger.info(data);  
+        await applyStyle(e, content, source);
+    }
+    async 人间(e) {
+        const response = await fetch('https://xoss.cc/api/yan/?msg=%E6%88%91%E5%9C%A8%E4%BA%BA%E9%97%B4%E5%87%91%E6%95%B0%E7%9A%84%E6%97%A5%E5%AD%90&type=text');
+        const data = await response.text();
+        logger.info(data);
+        const regex = /(.*?)——选自散文集(.*?)/;
+        const match = data.match(regex);
+        if (match) {
+            const content = match[1];
+            const source = '《我在人间凑数的日子》';    
+            await applyStyle(e, content, source);
+        }
+    }
+    async 毒鸡汤(e) {
+        const response = await fetch('https://xoss.cc/api/yan/?msg=%E6%AF%92%E9%B8%A1%E6%B1%A4&type=text');
+        const data = await response.text();
+        logger.info(data);
+        const content = data;
+        const source = '《毒鸡汤》';
+        await applyStyle(e, content, source);  
+    }
+    async 舔狗日记(e) {
+        const response = await fetch('https://xoss.cc/api/yan/?msg=%E8%88%94%E7%8B%97%E6%97%A5%E8%AE%B0&type=text');
+        const data = await response.text();
+        logger.info(data);
+        const content = data;
+        const source = '《舔狗日记》';
+        await applyStyle(e, content, source);  
+    }
+    async 社会语录(e) {
+        const response = await fetch('https://xoss.cc/api/yan/?msg=%E7%A4%BE%E4%BC%9A%E8%AF%AD%E5%BD%95&type=text');
+        const data = await response.text();
+        logger.info(data);
+        const content = data;
+        const source = '《社会语录》';
+        await applyStyle(e, content, source);  
+    }
+    async 骚话(e) {
+        const response = await fetch('https://xoss.cc/api/yan/?msg=%E9%AA%9A%E8%AF%9D&type=text');
+        const data = await response.text();
+        logger.info(data);
+        const content = data;
+        const source = '《骚话》';
+        await applyStyle(e, content, source);  
+    }
+    async 发病(e) {
+        let mmap = await e.group.getMemberMap();
+        let fabingren;
+        let memberId = this.e.at !== undefined ? this.e.at : e.user_id;
+        let memberInfo = mmap.get(memberId);
+        fabingren = memberInfo.nickname;
+    
+        let fabingurl = 'https://api.lolimi.cn/API/fabing/fb.php?name='
+        const response = await fetch(fabingurl + fabingren);
+        logger.info(fabingurl + fabingren);
+        const data = await response.json();
+        const content = data.data;
+        const source = '《发病》'; 
+        logger.info(data);
+        await applyStyle(e, content, source);
+    }
+    async 烧脑(e) {
+        // 获取当前文件的目录
+        const __dirname = dirname(fileURLToPath(import.meta.url));
+        // 获取 JSON 文件的绝对路径
+        const filePath = path.resolve(__dirname, '../../resources/maxim-json/brainteasers.json');
+        logger.info(filePath); 
+        // 读取 JSON 文件
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        // 随机选择一个题目
+        const item = data[Math.floor(Math.random() * data.length)];
+        const content = item.title;
+        const source = item.answer;
+        logger.info(item);  
+        await applyStyle(e, content, source);
+    }
+    async kfc(e) {
+        // 获取当前文件的目录
+        const __dirname = dirname(fileURLToPath(import.meta.url));
+        // 获取 JSON 文件的绝对路径
+        const filePath = path.resolve(__dirname, '../../resources/maxim-json/corpus.json');
+        logger.info(filePath); 
+        // 读取 JSON 文件
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         
-          await browser.close();
-        })();
+        // 随机选择一个内容
+        let randomIndex = Math.floor(Math.random() * data.length);
+        const content = data[randomIndex];
+        
+        const source = '《疯狂星期四》'; 
+        await applyStyle(e, content, source);
+    }
+    
+    
+    
+}
+
+    
+    
+    
+  
 
 
+
+
+
+
+
+
+
+
+const blurStyle = 毛玻璃样式 ? 'backdrop-filter: blur(5px);' : '';
+async function applyStyle(e, content, source) {
+    if (config.图片样式 === '竖图样式') {
+        await 竖图样式(e, content, source);
+    } else if (config.图片样式 === '横图样式') {
+        await 横图样式(e, content, source);
+    }else if (config.图片样式 === '无黑框横图样式') {
+        await 无黑框横图样式(e, content, source);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+async function generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport) {
+    var randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    e.reply("正在为您渲染，请稍后" + randomEmoji, true, { recallMsg: 5 });
+
+    // 随机选择一个URL或本地文件夹
+    let imageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    
+    if (imageUrl.startsWith('http')) {
+        // 如果选择的是URL
+        logger.info(imageUrl);
+    } else {
+        // 如果选择的是本地文件夹
+        fs.readdir(imageUrl, async (err, files) => {
+            if (err) throw err;
+    
+            let imageFiles = files.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+    
+            if (imageFiles.length > 0) {
+                // 如果文件夹中有图片
+                imageUrl = path.join(imageUrl, imageFiles[Math.floor(Math.random() * imageFiles.length)]);
+    
+                // 读取图片文件并转换为Base64编码
+                fs.readFile(imageUrl, (err, data) => {
+                    if (err) throw err;
+                    let base64Image = Buffer.from(data).toString('base64');
+                    console.log(base64Image);
+                });
+            } else {
+                // 如果文件夹中没有图片，从所有子文件夹中随机选择一个
+                let subfolders = files.filter(file => fs.statSync(path.join(imageUrl, file)).isDirectory());
+                let subfolderPath = path.join(imageUrl, subfolders[Math.floor(Math.random() * subfolders.length)]);
+    
+                // 在子文件夹中随机选择一张图片
+                fs.readdir(subfolderPath, (err, subfolderFiles) => {
+                    if (err) throw err;
+    
+                    let subfolderImageFiles = subfolderFiles.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+    
+                    if (subfolderImageFiles.length > 0) {
+                        imageUrl = path.join(subfolderPath, subfolderImageFiles[Math.floor(Math.random() * subfolderImageFiles.length)]);
+    
+                        // 读取图片文件并转换为Base64编码
+                        fs.readFile(imageUrl, (err, data) => {
+                            if (err) throw err;
+                            let base64Image = Buffer.from(data).toString('base64');
+                            imageUrl = 'data:image/jpeg;base64,' + base64Image;
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
+    let browser;
+    try {
+        browser = await puppeteer.launch({headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        
+        let Html = `
+        <html style="${html_style}">
+        <img src="${imageUrl}" style="${img_style}" />
+        <div class="quote" style="${quote_style}">
+          <div class="content" style="${content_style}">『${content}』</div>
+          <div class="source" style="${source_style}">——${source}</div>
+        </div>
+        </html>
+        `  
+
+        await page.setContent(Html)
+        await page.setViewport(viewport);
+        
+        const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
+        e.reply(segment.image(`base64://${base64}`))
         return true
 
-   }
+    } catch (error) {
+        console.error(error);
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
+    }
 }
+
+
+async function 竖图样式(e, content, source) {
+    const viewport = {
+        width: 800,
+        height: 1280,
+        deviceScaleFactor: 1,
+    };
+    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
+    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
+    const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 5px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: center;width: 40%;display: flex;flex-direction: column;justify-content: center;font-size: 2em; border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 0; top: 0; bottom: 0; ${blurStyle}`;
+    const content_style = `text-align: justify; line-height: normal; text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
+    const source_style = `text-align: right; font-size: 30px; color: rgba(255, 255, 255, 0.7); transform: skewX(-15deg);`;
+
+    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
+}
+
+async function 横图样式(e, content, source) {
+    const viewport = {
+        width: 1280,
+        height: 800,
+        deviceScaleFactor: 1,
+    };
+    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
+    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
+    const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 20px;border-radius: 20px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: left;width: 80%;display: flex;flex-direction: column;justify-content: center;font-size: 2em;border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); ${blurStyle}`;
+    const content_style = `text-align: justify; line-height: normal;text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
+    const source_style = `text-align: right;font-size: 30px;color: rgba(255, 255, 255, 0.7);transform: skewX(-15deg);`;
+
+    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
+}
+
+async function 无黑框横图样式(e, content, source) {
+    const viewport = {
+        width: 1280,
+        height: 800,
+        deviceScaleFactor: 1,
+    };
+    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
+    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(60%);`;
+    const quote_style = `color: white;background-color: transparent;text-align: left;width: 70%;display: flex;flex-direction: column;justify-content: center;font-size: 2em;font-weight: bold; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);`;
+    const content_style = `text-align: justify; line-height: normal; text-shadow: 1px 1px 2px #fff, -1px -1px 2px #000;`;
+    const source_style = `text-align: right;font-size: 30px;color: rgba(255, 255, 255, 0.7);transform: skewX(-15deg);font-weight: bold;`;    
+
+    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
+}
+
+
+
+
+
+
