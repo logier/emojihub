@@ -4,22 +4,23 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import https from 'https';
 
 const 毛玻璃样式 = true 
 const imageUrls = [
-    '/home/gallery', //横图
-    // 添加更多的 URL...
+    'https://t.mwm.moe/pc', //横图
+    'https://t.mwm.moe/mp', //竖图
+    // 添加更多的 本地文件夹或URL... 需要图片api可以去https://www.logier.icu
 ];
 
 
 const config = {
-    图片样式: '竖图样式' // 默认为竖图样式，可改为竖图样式\横图样式\无黑框横图样式
+    图片样式: '竖图样式' // 默认为竖图样式，可改为竖图样式\横图样式\无黑框横图样式 推荐根据图片的长宽选择
 };
 
-let 提示词颜表情 = true;
+let 提示词颜表情 = true; //是否在回复的时候开启颜表情
 
-let emojis = 提示词颜表情 ? ["ヾ(≧▽≦*)o", "φ(*￣0￣)", "q(≧▽≦q)", "ψ(｀∇´)ψ ​​", "（￣︶￣）↗　", "*^____^*", "(～￣▽￣)～", "( •̀ ω •́ )✧", "[]~(￣▽￣)~*", "φ(゜▽゜*)♪"] : [""];
+let emojis = 提示词颜表情 ? ["ヾ(≧▽≦*)o", "φ(*￣0￣)", "q(≧▽≦q)", "ψ(｀∇´)ψ ​​", "（￣︶￣）↗　", "*^____^*", "(～￣▽￣)～", "( •̀ ω •́ )✧", "[]~(￣▽￣)~*", "φ(゜▽゜*)♪"] : [""]; //可以自己添加颜表情
 
 export class TextMsg extends plugin {
     constructor() {
@@ -30,58 +31,46 @@ export class TextMsg extends plugin {
             priority: 6,   // 插件优先度，数字越小优先度越高
             rule: [
                 {
-                    reg: '^#?test$',   // 正则表达式,有关正则表达式请自行百度
-                    fnc: 'test'  // 执行方法
-                },
-                {
                     reg: '^#?一言$',
                     fnc: '一言'
-                  },
-                  {
+                },               
+                {
                     reg: '^#?人间$',
                     fnc: '人间'
-                  },
-                  {
+                },
+                {
                     reg: '^#?毒鸡汤$',
                     fnc: '毒鸡汤'
-                  },
-                  {
+                },
+                {
                     reg: '^#?舔狗日记$',
                     fnc: '舔狗日记'
-                  },
-                  {
+                },
+                {
                     reg: '^#?社会语录$',
                     fnc: '社会语录'
-                  },
-                  {
+                },
+                {
                     reg: '^#?骚话$',
                     fnc: '骚话'
-                  },
-                  {
+                },
+                {
                     reg: '^#?发病$',
                     fnc: '发病'
-                  },
-                  {
+                },
+                {
                     reg: '^#?烧脑$',
                     fnc: '烧脑'
-                  },
-                  {
+                },
+                {
                     reg: '^#?kfc$',
                     fnc: 'kfc'
-                  },
+                },
             ]
         })
 
     }
     
-    async test(e) {
-        const content = "这是内容";
-        const source = "这是来源";
-
-        
-    
-        await applyStyle(e, content, source);
-    }
     async 一言(e) {
         const response = await fetch('https://v1.hitokoto.cn');
         const data = await response.json();
@@ -103,37 +92,21 @@ export class TextMsg extends plugin {
         }
     }
     async 毒鸡汤(e) {
-        const response = await fetch('https://xoss.cc/api/yan/?msg=%E6%AF%92%E9%B8%A1%E6%B1%A4&type=text');
-        const data = await response.text();
-        logger.info(data);
-        const content = data;
-        const source = '《毒鸡汤》';
-        await applyStyle(e, content, source);  
+        await easyfetchData(e, 'https://xoss.cc/api/yan/?msg=%E6%AF%92%E9%B8%A1%E6%B1%A4&type=text', '《毒鸡汤》');
     }
+    
     async 舔狗日记(e) {
-        const response = await fetch('https://xoss.cc/api/yan/?msg=%E8%88%94%E7%8B%97%E6%97%A5%E8%AE%B0&type=text');
-        const data = await response.text();
-        logger.info(data);
-        const content = data;
-        const source = '《舔狗日记》';
-        await applyStyle(e, content, source);  
+        await easyfetchData(e, 'https://xoss.cc/api/yan/?msg=%E8%88%94%E7%8B%97%E6%97%A5%E8%AE%B0&type=text', '《舔狗日记》');
     }
+    
     async 社会语录(e) {
-        const response = await fetch('https://xoss.cc/api/yan/?msg=%E7%A4%BE%E4%BC%9A%E8%AF%AD%E5%BD%95&type=text');
-        const data = await response.text();
-        logger.info(data);
-        const content = data;
-        const source = '《社会语录》';
-        await applyStyle(e, content, source);  
+        await easyfetchData(e, 'https://xoss.cc/api/yan/?msg=%E7%A4%BE%E4%BC%9A%E8%AF%AD%E5%BD%95&type=text', '《社会语录》');
     }
+    
     async 骚话(e) {
-        const response = await fetch('https://xoss.cc/api/yan/?msg=%E9%AA%9A%E8%AF%9D&type=text');
-        const data = await response.text();
-        logger.info(data);
-        const content = data;
-        const source = '《骚话》';
-        await applyStyle(e, content, source);  
+        await easyfetchData(e, 'https://xoss.cc/api/yan/?msg=%E9%AA%9A%E8%AF%9D&type=text', '《骚话》');
     }
+    
     async 发病(e) {
         let mmap = await e.group.getMemberMap();
         let fabingren;
@@ -151,53 +124,63 @@ export class TextMsg extends plugin {
         await applyStyle(e, content, source);
     }
     async 烧脑(e) {
-        // 获取当前文件的目录
-        const __dirname = dirname(fileURLToPath(import.meta.url));
-        // 获取 JSON 文件的绝对路径
-        const filePath = path.resolve(__dirname, '../../resources/maxim-json/brainteasers.json');
-        logger.info(filePath); 
-        // 读取 JSON 文件
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        // 随机选择一个题目
-        const item = data[Math.floor(Math.random() * data.length)];
-        const content = item.title;
-        const source = item.answer;
-        logger.info(item);  
-        await applyStyle(e, content, source);
+        await filefetchData(e, 'brainteasers.json', item.answer);
     }
+    
     async kfc(e) {
-        // 获取当前文件的目录
-        const __dirname = dirname(fileURLToPath(import.meta.url));
-        // 获取 JSON 文件的绝对路径
-        const filePath = path.resolve(__dirname, '../../resources/maxim-json/corpus.json');
-        logger.info(filePath); 
-        // 读取 JSON 文件
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        
-        // 随机选择一个内容
-        let randomIndex = Math.floor(Math.random() * data.length);
-        const content = data[randomIndex];
-        
-        const source = '《疯狂星期四》'; 
-        await applyStyle(e, content, source);
+        await filefetchData(e, 'corpus.json', '《疯狂星期四》');
     }
-    
-    
-    
-}
-
-    
-    
     
   
+}
 
 
+async function easyfetchData(e, url, source) {
+    const response = await fetch(url);
+    const data = await response.text();
+    logger.info(data);
+    const content = data;
+    await applyStyle(e, content, source);
+}
+    
+async function filefetchData(e, jsonFileName, source) {
+    // 获取当前文件的目录
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    // 获取 JSON 文件的绝对路径
+    const filePath = path.resolve(__dirname, `../../resources/maxim-json/${jsonFileName}`);
+    // 获取文件路径的目录部分
+    const dirPath = path.dirname(filePath);
+
+    logger.info(filePath); 
+
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    let data;
+    if (fs.existsSync(filePath)) {
+        try {
+            // 尝试读取和解析 JSON 文件
+            data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        } catch (error) {
+            // 如果出现错误，删除文件以便重新下载
+            fs.unlinkSync(filePath);
+        }
+    }
+    if (!data) {
+        await downloadFile(`https://raw.githubusercontent.com/logier/emojihub/main/maxim-json/${jsonFileName}`, filePath);
+        // 重新读取 JSON 文件
+        data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    }
+    // 随机选择一个内容
+    const item = data[Math.floor(Math.random() * data.length)];
+    const content = item.title || item;
+    
+    await applyStyle(e, content, source);
+}
 
 
-
-
-
-
+  
 
 
 const blurStyle = 毛玻璃样式 ? 'backdrop-filter: blur(5px);' : '';
@@ -213,7 +196,20 @@ async function applyStyle(e, content, source) {
 
 
 
-
+async function downloadFile(url, dest) {
+    const file = fs.createWriteStream(dest);
+    return new Promise((resolve, reject) => {
+      https.get(url, response => {
+        response.pipe(file);
+        file.on('finish', () => {
+          file.close(resolve);
+        });
+      }).on('error', error => {
+        fs.unlink(dest);
+        reject(error.message);
+      });
+    });
+  }
 
 
 
@@ -349,6 +345,8 @@ async function 无黑框横图样式(e, content, source) {
 
     await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
 }
+
+
 
 
 

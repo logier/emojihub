@@ -5,11 +5,11 @@ import { segment } from 'oicq'
 import fs from 'fs';
 import path from 'path';
 
-// 定时发送时间，采用 Cron 表达式，当前默认为三十分钟推送一次
+// 定时发送时间，采用 Cron 表达式，当前默认每三十分钟发送一次
 const time = '0 0/30 * * * ? '
 
 // 指定定时发送的群号
-const groupList = ['123456', '78910']
+const groupList = ['123456', '456789']
 
 // 是否开启定时推送，默认为 false
 const isAutoPush = false
