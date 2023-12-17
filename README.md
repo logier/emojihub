@@ -1,7 +1,5 @@
 
-| [emojihub](https://gitee.com/logier/emojihub) | [@logier](https://gitee.com/logier) | 发送表情包支持capoo、狗妈、黑白、龙图、柴郡、小黑子 |
-| [定时发图](https://gitee.com/logier/emojihub) | [@logier](https://gitee.com/logier) | 定时发送你的相册 |
-| [maxim](https://gitee.com/logier/emojihub) | [@logier](https://gitee.com/logier) | 发送带有背景图片的文案，包括一言、人间 |
+
 
 ## emojihub
 
