@@ -34,9 +34,9 @@ svg text {
 }
 </style>
 <a class="card" href="https://www.logier.icu" target="_blank">
-  <img src="./screenshot/logo.png" alt="Your Image">
-  <svg viewBox="0 0 800 200">
+  <img src="./screenshot/logo.png">
 </a>
+
 
 
 
