@@ -1,41 +1,7 @@
 
-<style>
-.card {
-  width: 95%;
-  height: 220px;
-  margin: auto;
-  background: url('./screenshot/ina-min.webp') no-repeat center center / cover;
-  border-radius: 15px;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  text-decoration: none;
-}
-.card:hover {
-  box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
-}
-.card img {
-  width: 180px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 80px;
-}
-svg {
-  width: 43%;
-  height: 120px;
-}
-svg text {
-  text-transform: uppercase;
-  animation: stroke 5s infinite alternate;
-  letter-spacing: 10px;
-  font-size: 60px;
-}
-</style>
-<a class="card" href="https://www.logier.icu" target="_blank">
-  <img src="./screenshot/logo.png">
-</a>
+
+
+[![](./screenshot/logo.png )](https://www.logier.icu)
 
 
 
