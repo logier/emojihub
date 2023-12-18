@@ -7,6 +7,7 @@ import schedule from 'node-schedule'
 
 const imageUrls = [
     'https://t.mwm.moe/mp', //横图
+    //'/home/gallery',
     // 添加更多的 URL或本地文件夹...
 ];
 
@@ -165,7 +166,7 @@ async function push今日运势(e, isAuto = 0) {
       let Html = `
       <html style="background: ${cgColor}">
       <div class="fortune" style="width: 35%; height: 65rem; float: left; text-align: center; background: ${cgColor};">
-        <p>logier的今日运势为</p>
+        <p>你的今日运势为</p>
         <h2>${item.fortuneSummary}</h2>
         <p>${item.luckyStar}</p>
         <div class="content" style="margin: 0 auto; padding: 12px 12px; height: 49rem; max-width: 980px; max-height: 1024px; background: ${cgColor}; border-radius: 15px; backdrop-filter: blur(3px); box-shadow: ${shadowc}; writing-mode: vertical-rl; text-orientation: mixed;">
