@@ -6,8 +6,8 @@ import { dirname } from 'path';
 import schedule from 'node-schedule'
 
 const imageUrls = [
-    'http://www.98qy.com/sjbz/api.php?lx=meizi&method=zsy', //横图
-    // 添加更多的 URL...
+    '/home/gallery', //横图
+    // 添加更多的 URL或本地文件夹...
 ];
 
 // 定时发送时间，采用 Cron 表达式
@@ -70,45 +70,62 @@ export class TextMsg extends plugin {
  */
 
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 async function push今日运势(e, isAuto = 0) {
-    e.reply("正在为您渲染，请稍后", true, { recallMsg: 5 });
+  e.reply("正在为您渲染，请稍后" , true, { recallMsg: 5 });
+
+  // 随机选择一个URL或本地文件夹
+  let imageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
   
-    // 随机选择一个URL或本地文件夹
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    let imageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-    
-    if (imageUrl.startsWith('http')) {
-        // 如果选择的是URL
-        logger.info(imageUrl);
-      } else {
-        // 如果选择的是本地文件夹
-        const folderPath = path.resolve(__dirname, imageUrl);
-        let files = await fs.promises.readdir(folderPath);
-        let imageFiles = files.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
-        if (imageFiles.length > 0) {
-          // 如果文件夹中有图片
-          imageUrl = path.join(folderPath, imageFiles[Math.floor(Math.random() * imageFiles.length)]);
-          // 读取图片文件并转换为Base64编码
-          let data = await fs.promises.readFile(imageUrl);
-          let base64Image = Buffer.from(data).toString('base64');
-          logger.info(base64Image);
-        } else {
-          // 如果文件夹中没有图片，从所有子文件夹中随机选择一个
-          let subfolders = files.filter(file => fs.statSync(path.join(folderPath, file)).isDirectory());
-          let subfolderPath = path.join(folderPath, subfolders[Math.floor(Math.random() * subfolders.length)]);
-          // 在子文件夹中随机选择一张图片
-          let subfolderFiles = await fs.promises.readdir(subfolderPath);
-          let subfolderImageFiles = subfolderFiles.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
-          if (subfolderImageFiles.length > 0) {
-            imageUrl = path.join(subfolderPath, subfolderImageFiles[Math.floor(Math.random() * subfolderImageFiles.length)]);
-            logger.info(imageUrl);
-            // 读取图片文件并转换为Base64编码
-            let data = await fs.promises.readFile(imageUrl);
-            let base64Image = Buffer.from(data).toString('base64');
-            imageUrl = 'data:image/jpeg;base64,' + base64Image;
+  if (imageUrl.startsWith('http')) {
+      // 如果选择的是URL
+      logger.info(imageUrl);
+  } else {
+      // 如果选择的是本地文件夹
+      fs.readdir(imageUrl, async (err, files) => {
+          if (err) throw err;
+  
+          let imageFiles = files.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+  
+          if (imageFiles.length > 0) {
+              // 如果文件夹中有图片
+              imageUrl = path.join(imageUrl, imageFiles[Math.floor(Math.random() * imageFiles.length)]);
+  
+              // 读取图片文件并转换为Base64编码
+              fs.readFile(imageUrl, (err, data) => {
+                  if (err) throw err;
+                  let base64Image = Buffer.from(data).toString('base64');
+                  console.log(base64Image);
+              });
+          } else {
+              // 如果文件夹中没有图片，从所有子文件夹中随机选择一个
+              let subfolders = files.filter(file => fs.statSync(path.join(imageUrl, file)).isDirectory());
+              let subfolderPath = path.join(imageUrl, subfolders[Math.floor(Math.random() * subfolders.length)]);
+  
+              // 在子文件夹中随机选择一张图片
+              fs.readdir(subfolderPath, (err, subfolderFiles) => {
+                  if (err) throw err;
+  
+                  let subfolderImageFiles = subfolderFiles.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+  
+                  if (subfolderImageFiles.length > 0) {
+                      imageUrl = path.join(subfolderPath, subfolderImageFiles[Math.floor(Math.random() * subfolderImageFiles.length)]);
+                      logger.info(imageUrl)
+                      // 读取图片文件并转换为Base64编码
+                      fs.readFile(imageUrl, (err, data) => {
+                          if (err) throw err;
+                          let base64Image = Buffer.from(data).toString('base64');
+                          imageUrl = 'data:image/jpeg;base64,' + base64Image;
+                      });
+                  }
+              });
           }
-        }
-      }
+      });
+  }
+
+
       
     // 获取 JSON 文件的绝对路径
     const filePath = path.resolve(__dirname, `../../resources/jrys/jrys.json`);
@@ -136,34 +153,37 @@ async function push今日运势(e, isAuto = 0) {
     // 随机选择一个内容
     const item = data[Math.floor(Math.random() * data.length)];
     logger.info(item)
-    let cgColor = 'rgba(255, 255, 255, 0.6)';
-    let shadowc = '0px 0px 15px rgba(0, 0, 0, 0.3)';
-    let lightcg = 'brightness(100%)';
+    const cgColor = 'rgba(255, 255, 255, 0.6)';
+    const shadowc = '0px 0px 15px rgba(0, 0, 0, 0.3)';
+    const lightcg = 'brightness(100%)';
+    
     let browser;
     try {
       browser = await puppeteer.launch({headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
       const page = await browser.newPage();
-  
+    
       let Html = `
       <html style="background: ${cgColor}">
-      <div style="width: 35%; height: 65rem; float: left; text-align: center; background: ${cgColor}">
+      <div class="fortune" style="width: 35%; height: 65rem; float: left; text-align: center; background: ${cgColor};">
         <p>logier的今日运势为</p>
         <h2>${item.fortuneSummary}</h2>
         <p>${item.luckyStar}</p>
-        <div style="margin: 0 auto; padding: 12px 12px; height: 49rem; max-width: 980px; max-height: 1024px; background: ${cgColor}; border-radius: 15px; backdrop-filter: blur(3px); box-shadow: ${shadowc}; writing-mode: vertical-rl; text-orientation: mixed">
+        <div class="content" style="margin: 0 auto; padding: 12px 12px; height: 49rem; max-width: 980px; max-height: 1024px; background: ${cgColor}; border-radius: 15px; backdrop-filter: blur(3px); box-shadow: ${shadowc}; writing-mode: vertical-rl; text-orientation: mixed;">
           <p>${item.signText}</p>
           <p>${item.unsignText}</p>
         </div>
         <p>仅供娱乐| 相信科学，请勿迷信 |仅供娱乐</p>
       </div>
-      <div style="height:65rem;width: 65%; float: right;box-shadow:0px 0px 15px rgba(0, 0, 0, 0.3);text-align: center;">
-        <img style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle" src=${imageUrl}/>
+      <div class="image" style="height:65rem; width: 65%; float: right; box-shadow: ${shadowc}; text-align: center;">
+        <img src=${imageUrl} style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle;"/>
       </div>
       </html>
-      `  
-  
+      `
+    
+    
+    
       await page.setContent(Html)
-  
+    
       const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
     
       if (isAuto) {
@@ -171,11 +191,10 @@ async function push今日运势(e, isAuto = 0) {
       } else {
         e.reply(segment.image(`base64://${base64}`))
       }
-
-
-
+    
     } catch (error) {
       console.error(error);
+      e.reply('抱歉，生成图片时出现了错误。');
     } finally {
       if (browser) {
         await browser.close();
@@ -183,6 +202,7 @@ async function push今日运势(e, isAuto = 0) {
     }
     
     return true;
+    
   }
 
 

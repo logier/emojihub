@@ -7,8 +7,8 @@ import { dirname } from 'path';
 import schedule from 'node-schedule'
 
 const imageUrls = [
-    'http://www.98qy.com/sjbz/api.php?lx=meizi&method=zsy', //横图
-    // 添加更多的 URL...
+    '/home/gallery', //横图
+    // 添加更多的 URL或本地文件夹...
 ];
 
 // 定时发送时间，采用 Cron 表达式
@@ -127,82 +127,44 @@ export class TextMsg extends plugin {
     guayao_list = guayao_all.split('?');
 
     var randomIndex = Math.floor(Math.random() * guayao_list.length);
-    let content = "你心中所念卦象如下:" + guayao_list[randomIndex] + guachi_list[randomIndex];
+    let content = "你心中所念卦象如下: \n " + guayao_list[randomIndex] + guachi_list[randomIndex];
 
 
 
 
            let Html = `
            <html>
-            <head>
-                   <style>
-                     @font-face {
-                       font-family: AlibabaPuHuiTi-2-55-Regular;
-                       src:url(https://puhuiti.oss-cn-hangzhou.aliyuncs.com/AlibabaPuHuiTi-2/AlibabaPuHuiTi-2-55-Regular/AlibabaPuHuiTi-2-55-Regular.woff2) format('woff2');
-                     }
-                     * {
-                        padding: 0;
-                        margin: 0;
-                    }
-                     html {
-  
-                       font-family: 'AlibabaPuHuiTi-2-55-Regular', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-                     }
-                    body{
-  
-                     position:absolute;
-                     }
-                     .nei{
-                       float: left;
-                       box-shadow: 3px 3px 3px #666666;
-                       width: 260px;
-                       height:698px;
-                       display:flex;
-                       border-radius:10px 10px 10px 10px;
-                       border:1px solid #a1a1a1;
-                       background: rgba(255, 255, 255, .6);
-                       z-index:1;
-                       position:absolute;
-                     }
-                     p {
-                      //font-weight:bold;
-                       color : rgba(0,0,0,.5);
-                       font-size:16px;
-                       padding: 5px;
-                      text-shadow:3px 3px 2px rgba(-20,-10,4,.3);
-                       word-wrap: break-word;
-                       white-space: pre-wrap;
-                     }
-                     .tu{
-                         float: left;
-                       border:1px solid #00000;
-                      }
-                    img{
-                        border:1px solid #00000;
-                        border-radius:10px 10px 10px 10px;
-                    }
-                   </style>
-                 </head>
-                 <body>
-                 <div class="tu">
-                     <img src ="${imageUrl}" height=700>
-                 </div>
-                 <div class="nei">
-                   <p>${content}</p>
-                 </div>
-                 </body>
-                 </html>
+           <head>
+             <style>
+               @font-face {
+                 font-family: AlibabaPuHuiTi-2-55-Regular;
+                 src:url(https://puhuiti.oss-cn-hangzhou.aliyuncs.com/AlibabaPuHuiTi-2/AlibabaPuHuiTi-2-55-Regular/AlibabaPuHuiTi-2-55-Regular.woff2) format('woff2');
+               }
+             </style>
+           </head>
+           <body style="position:absolute; padding: 0; margin: 0; font-family: 'AlibabaPuHuiTi-2-55-Regular', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;">
+             <div class="tu" style="float: left; border:1px solid #00000;">
+               <img src="${imageUrl}" style="border:1px solid #00000; border-radius:10px 10px 10px 10px; height:700;">
+             </div>
+             <div class="nei" style="float: left; box-shadow: 3px 3px 3px #666666; width: 260px; height:698px; display:flex; border-radius:10px 10px 10px 10px; border:1px solid #a1a1a1; background: rgba(255, 255, 255, .6); z-index:1; position:absolute;">
+               <p style="color : rgba(0,0,0,.5); font-size:16px; padding: 5px; word-wrap: break-word; white-space: pre-wrap;">${content}</p>
+             </div>
+           </body>
+         </html>         
            `  
        
-           await page.setContent(Html)
-           
-        
-           const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
-         
+           await page.setContent(Html);
+
+           // 获取图片元素
+           const imgElement = await page.$('.tu img');
+       
+           // 对图片元素进行截图
+           const base64 = await imgElement.screenshot({ encoding: "base64" });
+       
            if (isAuto) {
-             e.sendMsg(segment.image(`base64://${base64}`))
+               e.sendMsg(segment.image(`base64://${base64}`))
            } else {
-             e.reply(segment.image(`base64://${base64}`))
+               e.reply(segment.image(`base64://${base64}`))
            }
      
      

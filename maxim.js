@@ -8,15 +8,11 @@ import https from 'https';
 
 const 毛玻璃样式 = true 
 const imageUrls = [
-    'https://t.mwm.moe/pc', //横图
-    'https://t.mwm.moe/mp', //竖图
+    '/home/gallery', //横图
     // 添加更多的 本地文件夹或URL... 需要图片api可以去https://www.logier.icu
 ];
 
 
-const config = {
-    图片样式: '竖图样式' // 默认为竖图样式，可改为竖图样式\横图样式\无黑框横图样式 推荐根据图片的长宽选择
-};
 
 let 提示词颜表情 = true; //是否在回复的时候开启颜表情
 
@@ -77,7 +73,7 @@ export class TextMsg extends plugin {
         const content = data.hitokoto;
         const source = data.from;
         logger.info(data);  
-        await applyStyle(e, content, source);
+        await generateHtml(e, content, source);
     }
     async 人间(e) {
         const response = await fetch('https://xoss.cc/api/yan/?msg=%E6%88%91%E5%9C%A8%E4%BA%BA%E9%97%B4%E5%87%91%E6%95%B0%E7%9A%84%E6%97%A5%E5%AD%90&type=text');
@@ -88,7 +84,7 @@ export class TextMsg extends plugin {
         if (match) {
             const content = match[1];
             const source = '《我在人间凑数的日子》';    
-            await applyStyle(e, content, source);
+            await generateHtml(e, content, source);
         }
     }
     async 毒鸡汤(e) {
@@ -121,7 +117,7 @@ export class TextMsg extends plugin {
         const content = data.data;
         const source = '《发病》'; 
         logger.info(data);
-        await applyStyle(e, content, source);
+        await generateHtml(e, content, source);
     }
     async 烧脑(e) {
         await filefetchData(e, 'brainteasers.json', item.answer);
@@ -140,7 +136,7 @@ async function easyfetchData(e, url, source) {
     const data = await response.text();
     logger.info(data);
     const content = data;
-    await applyStyle(e, content, source);
+    await generateHtml(e, content, source);
 }
     
 async function filefetchData(e, jsonFileName, source) {
@@ -176,7 +172,7 @@ async function filefetchData(e, jsonFileName, source) {
     const item = data[Math.floor(Math.random() * data.length)];
     const content = item.title || item;
     
-    await applyStyle(e, content, source);
+    await generateHtml(e, content, source);
 }
 
 
@@ -184,15 +180,7 @@ async function filefetchData(e, jsonFileName, source) {
 
 
 const blurStyle = 毛玻璃样式 ? 'backdrop-filter: blur(5px);' : '';
-async function applyStyle(e, content, source) {
-    if (config.图片样式 === '竖图样式') {
-        await 竖图样式(e, content, source);
-    } else if (config.图片样式 === '横图样式') {
-        await 横图样式(e, content, source);
-    }else if (config.图片样式 === '无黑框横图样式') {
-        await 无黑框横图样式(e, content, source);
-    }
-}
+
 
 
 
@@ -216,7 +204,7 @@ async function downloadFile(url, dest) {
 
 
 
-async function generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport) {
+async function generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style) {
     var randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
     e.reply("正在为您渲染，请稍后" + randomEmoji, true, { recallMsg: 5 });
 
@@ -256,7 +244,7 @@ async function generateHtml(e, content, source, html_style, img_style, quote_sty
     
                     if (subfolderImageFiles.length > 0) {
                         imageUrl = path.join(subfolderPath, subfolderImageFiles[Math.floor(Math.random() * subfolderImageFiles.length)]);
-    
+                        logger.info(imageUrl)
                         // 读取图片文件并转换为Base64编码
                         fs.readFile(imageUrl, (err, data) => {
                             if (err) throw err;
@@ -273,21 +261,33 @@ async function generateHtml(e, content, source, html_style, img_style, quote_sty
     try {
         browser = await puppeteer.launch({headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
+
+        const html_style = `display: flex;justify-content: center;align-items: center;position: relative;`;
+        const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
+        const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 5px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: center;width: 40%;display: flex;flex-direction: column;justify-content: center;font-size: 3em; border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 0; top: 0; bottom: 0; ${blurStyle}`;
+        const content_style = `text-align: justify; line-height: normal; text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
+        const source_style = `text-align: right; font-size: 1em; color: rgba(255, 255, 255, 0.7); transform: skewX(-15deg);`;
         
         let Html = `
         <html style="${html_style}">
-        <img src="${imageUrl}" style="${img_style}" />
+        <div class="img-container" style="${img_style}">
+          <img src="${imageUrl}" object-fit: cover;" />
+        </div>
         <div class="quote" style="${quote_style}">
           <div class="content" style="${content_style}">『${content}』</div>
           <div class="source" style="${source_style}">——${source}</div>
         </div>
-        </html>
+      </html>
         `  
-
+    
         await page.setContent(Html)
-        await page.setViewport(viewport);
-        
-        const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
+    
+        // 获取图片容器元素
+        const imgContainerElement = await page.$('.img-container img');
+
+        // 对图片容器元素进行截图
+        const base64 = await imgContainerElement.screenshot({ encoding: "base64" });
+
         e.reply(segment.image(`base64://${base64}`))
         return true
 
@@ -298,53 +298,13 @@ async function generateHtml(e, content, source, html_style, img_style, quote_sty
             await browser.close();
         }
     }
+    
 }
 
 
-async function 竖图样式(e, content, source) {
-    const viewport = {
-        width: 800,
-        height: 1280,
-        deviceScaleFactor: 1,
-    };
-    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
-    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
-    const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 5px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: center;width: 40%;display: flex;flex-direction: column;justify-content: center;font-size: 2em; border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 0; top: 0; bottom: 0; ${blurStyle}`;
-    const content_style = `text-align: justify; line-height: normal; text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
-    const source_style = `text-align: right; font-size: 30px; color: rgba(255, 255, 255, 0.7); transform: skewX(-15deg);`;
 
-    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
-}
 
-async function 横图样式(e, content, source) {
-    const viewport = {
-        width: 1280,
-        height: 800,
-        deviceScaleFactor: 1,
-    };
-    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
-    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
-    const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 20px;border-radius: 20px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: left;width: 80%;display: flex;flex-direction: column;justify-content: center;font-size: 2em;border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); ${blurStyle}`;
-    const content_style = `text-align: justify; line-height: normal;text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
-    const source_style = `text-align: right;font-size: 30px;color: rgba(255, 255, 255, 0.7);transform: skewX(-15deg);`;
 
-    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
-}
-
-async function 无黑框横图样式(e, content, source) {
-    const viewport = {
-        width: 1280,
-        height: 800,
-        deviceScaleFactor: 1,
-    };
-    const html_style = `width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;position: relative;`;
-    const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(60%);`;
-    const quote_style = `color: white;background-color: transparent;text-align: left;width: 70%;display: flex;flex-direction: column;justify-content: center;font-size: 2em;font-weight: bold; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);`;
-    const content_style = `text-align: justify; line-height: normal; text-shadow: 1px 1px 2px #fff, -1px -1px 2px #000;`;
-    const source_style = `text-align: right;font-size: 30px;color: rgba(255, 255, 255, 0.7);transform: skewX(-15deg);font-weight: bold;`;    
-
-    await generateHtml(e, content, source, html_style, img_style, quote_style, content_style, source_style, viewport);
-}
 
 
 

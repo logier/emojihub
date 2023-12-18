@@ -96,7 +96,7 @@ curl -o "./plugins/example/今日运势.js" "https://gitee.com/logier/emojihub/r
 
 <br>
 
-## 4.算一卦
+## 5.算一卦
 
 ```
 curl -o "./plugins/example/算一卦.js" "https://gitee.com/logier/emojihub/raw/main/算一卦.js"
