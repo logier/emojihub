@@ -9,10 +9,10 @@
 
 
 
-
+<br>
 <br>
 
-## 1.emojihub（表情包）
+# 1.emojihub（表情包）
 
 ```
 curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/main/emojihub.js"
@@ -22,6 +22,7 @@ curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/m
 发送capoo即可
 
 <img src="screenshot/capoo.png" width="70%">
+
 ***
 
 推荐把仓库的emojihub文件下载并放到resources文件夹内，会检测是否有本地图片，没有会发送网络图片 
@@ -44,8 +45,9 @@ curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/m
 <img src="screenshot/相册.png" width="70%">
 
 <br>
+<br>
 
-## 2.定时发图
+# 2.定时发图
 
 ```
 curl -o "./plugins/example/定时发图.js" "https://gitee.com/logier/emojihub/raw/main/定时发图.js"
@@ -61,8 +63,9 @@ curl -o "./plugins/example/定时发图.js" "https://gitee.com/logier/emojihub/r
 <img src="screenshot/图库.png" width="70%">
 
 <br>
+<br>
 
-## 3.图片一言
+# 3.图片一言
 
 ```
 curl -o "./plugins/example/maxim.js" "https://gitee.com/logier/emojihub/raw/main/maxim.js"
@@ -79,10 +82,10 @@ curl -o "./plugins/example/maxim.js" "https://gitee.com/logier/emojihub/raw/main
 图片支持本地文件夹和网络图片api
 如果没有图片可以去https://www.logier.icu找
 
-
+<br>
 <br>
 
-## 4.今日运势
+# 4.今日运势
 
 ```
 curl -o "./plugins/example/今日运势.js" "https://gitee.com/logier/emojihub/raw/main/今日运势.js"
@@ -95,8 +98,9 @@ curl -o "./plugins/example/今日运势.js" "https://gitee.com/logier/emojihub/r
 <img src="screenshot/今日运势.png" width="70%">
 
 <br>
+<br>
 
-## 5.算一卦
+# 5.算一卦
 
 ```
 curl -o "./plugins/example/算一卦.js" "https://gitee.com/logier/emojihub/raw/main/算一卦.js"
