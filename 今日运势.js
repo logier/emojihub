@@ -1,0 +1,201 @@
+import puppeteer from "puppeteer";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import schedule from 'node-schedule'
+
+const imageUrls = [
+    'http://www.98qy.com/sjbz/api.php?lx=meizi&method=zsy', //横图
+    // 添加更多的 URL...
+];
+
+// 定时发送时间，采用 Cron 表达式
+const time = '0 30 7 * * ? '
+
+/* 各位代表的意思 *-代表任意值 ？-不指定值，仅日期和星期域支持该字符。 （想了解更多，请自行搜索Cron表达式学习）
+    *  *  *  *  *  *
+    ┬  ┬  ┬  ┬  ┬  ┬
+    │  │  │  │  │  |
+    │  │  │  │  │  └ 星期几，取值：0 - 7，其中 0 和 7 都表示是周日
+    │  │  │  │  └─── 月份，取值：1 - 12
+    │  │  │  └────── 日期，取值：1 - 31
+    │  │  └───────── 时，取值：0 - 23
+    │  └──────────── 分，取值：0 - 59
+    └─────────────── 秒，取值：0 - 59（可选）
+*/
+
+// 指定定时发送的群号
+const groupList = ['123456','123456']
+
+/**
+ * 开启定时推送的群号，填写格式如下
+ * 单个群号填写如下：
+ * ["374900636"];
+ * 多个个群号填写如下：
+ * ["374900636","374900636"];
+ */
+
+// 是否开启定时推送
+const isAutoPush = false
+
+autoTask()
+
+
+// TextMsg可自行更改，其他照旧即可。
+export class TextMsg extends plugin {
+    constructor() {
+        super({
+            name: '今日运势', // 插件名称
+            dsc: '今日运势',  // 插件描述            
+            event: 'message',  // 更多监听事件请参考下方的 Events
+            priority: 6,   // 插件优先度，数字越小优先度越高
+            rule: [
+                {
+                    reg: '^#今日运势$',   // 正则表达式,有关正则表达式请自行百度
+                    fnc: '今日运势'  // 执行方法
+                }
+            ]
+        })
+
+    }
+    async 今日运势(e) {
+        push今日运势(e)
+      }
+}
+
+/**
+ * 推送日历
+ * @param e oicq传递的事件参数e
+ */
+
+
+async function push今日运势(e, isAuto = 0) {
+    e.reply("正在为您渲染，请稍后", true, { recallMsg: 5 });
+  
+    // 随机选择一个URL或本地文件夹
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    let imageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    
+    if (imageUrl.startsWith('http')) {
+        // 如果选择的是URL
+        logger.info(imageUrl);
+      } else {
+        // 如果选择的是本地文件夹
+        const folderPath = path.resolve(__dirname, imageUrl);
+        let files = await fs.promises.readdir(folderPath);
+        let imageFiles = files.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+        if (imageFiles.length > 0) {
+          // 如果文件夹中有图片
+          imageUrl = path.join(folderPath, imageFiles[Math.floor(Math.random() * imageFiles.length)]);
+          // 读取图片文件并转换为Base64编码
+          let data = await fs.promises.readFile(imageUrl);
+          let base64Image = Buffer.from(data).toString('base64');
+          logger.info(base64Image);
+        } else {
+          // 如果文件夹中没有图片，从所有子文件夹中随机选择一个
+          let subfolders = files.filter(file => fs.statSync(path.join(folderPath, file)).isDirectory());
+          let subfolderPath = path.join(folderPath, subfolders[Math.floor(Math.random() * subfolders.length)]);
+          // 在子文件夹中随机选择一张图片
+          let subfolderFiles = await fs.promises.readdir(subfolderPath);
+          let subfolderImageFiles = subfolderFiles.filter(file => ['.jpeg', '.jpg', '.gif', '.png', '.webp'].includes(path.extname(file).toLowerCase()));
+          if (subfolderImageFiles.length > 0) {
+            imageUrl = path.join(subfolderPath, subfolderImageFiles[Math.floor(Math.random() * subfolderImageFiles.length)]);
+            logger.info(imageUrl);
+            // 读取图片文件并转换为Base64编码
+            let data = await fs.promises.readFile(imageUrl);
+            let base64Image = Buffer.from(data).toString('base64');
+            imageUrl = 'data:image/jpeg;base64,' + base64Image;
+          }
+        }
+      }
+      
+    // 获取 JSON 文件的绝对路径
+    const filePath = path.resolve(__dirname, `../../resources/jrys/jrys.json`);
+    // 获取文件路径的目录部分
+    const dirPath = path.dirname(filePath);
+    logger.info(filePath); 
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+    let data;
+    if (fs.existsSync(filePath)) {
+      try {
+        // 尝试读取和解析 JSON 文件
+        data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      } catch (error) {
+        // 如果出现错误，删除文件以便重新下载
+        fs.unlinkSync(filePath);
+      }
+    }
+    if (!data) {
+      await downloadFile(`https://raw.githubusercontent.com/logier/emojihub/main/jrys/jrys.json`, filePath);
+      // 重新读取 JSON 文件
+      data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    }
+    // 随机选择一个内容
+    const item = data[Math.floor(Math.random() * data.length)];
+    logger.info(item)
+    let cgColor = 'rgba(255, 255, 255, 0.6)';
+    let shadowc = '0px 0px 15px rgba(0, 0, 0, 0.3)';
+    let lightcg = 'brightness(100%)';
+    let browser;
+    try {
+      browser = await puppeteer.launch({headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+      const page = await browser.newPage();
+  
+      let Html = `
+      <html style="background: ${cgColor}">
+      <div style="width: 35%; height: 65rem; float: left; text-align: center; background: ${cgColor}">
+        <p>logier的今日运势为</p>
+        <h2>${item.fortuneSummary}</h2>
+        <p>${item.luckyStar}</p>
+        <div style="margin: 0 auto; padding: 12px 12px; height: 49rem; max-width: 980px; max-height: 1024px; background: ${cgColor}; border-radius: 15px; backdrop-filter: blur(3px); box-shadow: ${shadowc}; writing-mode: vertical-rl; text-orientation: mixed">
+          <p>${item.signText}</p>
+          <p>${item.unsignText}</p>
+        </div>
+        <p>仅供娱乐| 相信科学，请勿迷信 |仅供娱乐</p>
+      </div>
+      <div style="height:65rem;width: 65%; float: right;box-shadow:0px 0px 15px rgba(0, 0, 0, 0.3);text-align: center;">
+        <img style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle" src=${imageUrl}/>
+      </div>
+      </html>
+      `  
+  
+      await page.setContent(Html)
+  
+      const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
+    
+      if (isAuto) {
+        e.sendMsg(segment.image(`base64://${base64}`))
+      } else {
+        e.reply(segment.image(`base64://${base64}`))
+      }
+
+
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
+    }
+    
+    return true;
+  }
+
+
+
+  function autoTask() {
+    if (isAutoPush) {
+      schedule.scheduleJob(time, () => {
+        logger.info('[今日运势]：开始自动推送...')
+        for (let i = 0; i < groupList.length; i++) {
+          let group = Bot.pickGroup(groupList[i])
+          push今日运势(group, 1)
+          common.sleep(1000)
+        }
+      })
+    }
+  }
