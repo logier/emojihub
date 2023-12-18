@@ -18,12 +18,13 @@
 curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/main/emojihub.js"
 ```
 
+
 发送表情包支持capoo、狗妈、黑白、龙图、柴郡、小黑子
 发送capoo即可
 
 <img src="screenshot/capoo.png" width="70%">
 
-***
+
 
 推荐把仓库的emojihub文件下载并放到resources文件夹内，会检测是否有本地图片，没有会发送网络图片 
 
@@ -36,7 +37,7 @@ curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/m
 
 如果你们有更多表情包欢迎提供！
 
-***
+
 支持自定义图片
 <img src="screenshot/自定义.png" width="100%">
 

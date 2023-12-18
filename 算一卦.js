@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import schedule from 'node-schedule'
 
 const imageUrls = [
-    '/home/gallery', //横图
+    'https://t.mwm.moe/pc', //横图
     // 添加更多的 URL或本地文件夹...
 ];
 
@@ -51,7 +51,7 @@ export class TextMsg extends plugin {
             priority: 6,   // 插件优先度，数字越小优先度越高
             rule: [
                 {
-                    reg: '^#算一卦$',   // 正则表达式,有关正则表达式请自行百度
+                    reg: '^#?算一卦$',   // 正则表达式,有关正则表达式请自行百度
                     fnc: '算一卦'  // 执行方法
                 }
             ]

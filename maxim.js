@@ -8,7 +8,7 @@ import https from 'https';
 
 const 毛玻璃样式 = true 
 const imageUrls = [
-    '/home/gallery', //横图
+    'https://t.mwm.moe/ycy', //横图
     // 添加更多的 本地文件夹或URL... 需要图片api可以去https://www.logier.icu
 ];
 
@@ -263,7 +263,7 @@ async function generateHtml(e, content, source, html_style, img_style, quote_sty
         const page = await browser.newPage();
 
         const html_style = `display: flex;justify-content: center;align-items: center;position: relative;`;
-        const img_style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;`;
+        const img_style = `position: absolute; top: 0; left: 0; object-fit: cover;`;
         const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 5px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: center;width: 40%;display: flex;flex-direction: column;justify-content: center;font-size: 3em; border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 0; top: 0; bottom: 0; ${blurStyle}`;
         const content_style = `text-align: justify; line-height: normal; text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
         const source_style = `text-align: right; font-size: 1em; color: rgba(255, 255, 255, 0.7); transform: skewX(-15deg);`;
