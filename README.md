@@ -52,9 +52,9 @@ curl -o "./plugins/example/定时发图.js" "https://gitee.com/logier/emojihub/r
 ```
 
 
-<img src="screenshot/定时发图设置1.png" width="70%">
+<img src="screenshot/定时发图设置1.png" width="100%">
 
-<img src="screenshot/定时发图设置2.png" width="70%">
+<img src="screenshot/定时发图设置2.png" width="100%">
 
 需要设置这两部分，效果如下
 
@@ -71,12 +71,13 @@ curl -o "./plugins/example/maxim.js" "https://gitee.com/logier/emojihub/raw/main
 发送带有图片的一言、人间、毒鸡汤、舔狗日记、社会语录、骚话、发病、烧脑、疯狂星期四
 
 <img src="screenshot/一言.png" width="70%">
+
 需要的设置如下图
 
 <img src="screenshot/一言设置.png" width="70%">
+
 图片支持本地文件夹和网络图片api
 如果没有图片可以去https://www.logier.icu找
-如果有更多文案欢迎推荐给我
 
 
 <br>
@@ -90,3 +91,7 @@ curl -o "./plugins/example/今日运势.js" "https://gitee.com/logier/emojihub/r
 [原项目地址](https://github.com/Twiyin0/koishi-plugin-jryspro)
 
 <img src="screenshot/今日运势.png" width="70%">
+
+<br>
+
+### 如果有更多文案或者图片api欢迎推荐给我
