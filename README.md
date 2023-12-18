@@ -32,43 +32,15 @@ svg text {
   letter-spacing: 10px;
   font-size: 60px;
 }
-@keyframes stroke {
-  0% {
-    fill: rgba(72, 138, 20, 0);
-    stroke: rgba(54, 95, 160, 1);
-    stroke-dashoffset: 25%;
-    stroke-dasharray: 0 50%;
-    stroke-width: 0.8;
-  }
-  50% {
-    fill: rgba(72, 138, 20, 0);
-    stroke: rgba(54, 95, 160, 1);
-    stroke-width: 1.2;
-  }
-  70% {
-    fill: rgba(72, 138, 20, 0);
-    stroke: rgba(54, 95, 160, 1);
-    stroke-width: 1.5;
-  }
-  90%,
-  100% {
-    fill: rgba(72, 138, 204, 1);
-    stroke: rgba(54, 95, 160, 0);
-    stroke-dashoffset: -25%;
-    stroke-dasharray: 50% 0;
-    stroke-width: 0;
-  }
-}
 </style>
 <a class="card" href="https://www.logier.icu" target="_blank">
   <img src="./screenshot/logo.png" alt="Your Image">
   <svg viewBox="0 0 800 200">
-    <rect x="0" y="60%" width="450" height="80" fill="#f0f0f0" rx="15" ry="15" />
-    <text x="30" y="92%"> 获取图片api </text>
-  </svg>
 </a>
 
-## emojihub
+
+
+## emojihub（表情包）
 
 ```
 curl -o "./plugins/example/emojihub.js" "https://gitee.com/logier/emojihub/raw/main/emojihub.js"
