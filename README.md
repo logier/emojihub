@@ -88,9 +88,23 @@ curl -o "./plugins/example/maxim.js" "https://gitee.com/logier/emojihub/raw/main
 curl -o "./plugins/example/今日运势.js" "https://gitee.com/logier/emojihub/raw/main/今日运势.js"
 ```
 
-[原项目地址](https://github.com/Twiyin0/koishi-plugin-jryspro)
+[借鉴自暮佬的jryspro，原项目地址](https://github.com/Twiyin0/koishi-plugin-jryspro)
+
+可定时发送，直接发送指令为#今日运势
 
 <img src="screenshot/今日运势.png" width="70%">
+
+<br>
+
+## 4.算一卦
+
+```
+curl -o "./plugins/example/算一卦.js" "https://gitee.com/logier/emojihub/raw/main/算一卦.js"
+```
+
+可定时发送，直接发送指令为#算一卦
+
+<img src="screenshot/算一卦.png" width="70%">
 
 <br>
 
