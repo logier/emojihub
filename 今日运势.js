@@ -6,13 +6,13 @@ import { dirname } from 'path';
 import schedule from 'node-schedule'
 
 const imageUrls = [
-    'https://t.mwm.moe/mp', //横图
-    //'/home/gallery',
+    //'https://t.mwm.moe/mp', //横图
+    '/home/gallery',
     // 添加更多的 URL或本地文件夹...
 ];
 
 // 定时发送时间，采用 Cron 表达式
-const time = '0 30 7 * * ? '
+const time = '0 30 7 * * ?'
 
 /* 各位代表的意思 *-代表任意值 ？-不指定值，仅日期和星期域支持该字符。 （想了解更多，请自行搜索Cron表达式学习）
     *  *  *  *  *  *
@@ -28,7 +28,7 @@ const time = '0 30 7 * * ? '
 
 // 指定定时发送的群号
 const groupList = ['123456','123456']
-
+// const groupList = ["774780354"];
 /**
  * 开启定时推送的群号，填写格式如下
  * 单个群号填写如下：
@@ -61,6 +61,7 @@ export class TextMsg extends plugin {
 
     }
     async 今日运势(e) {
+      e.reply("正在为您渲染，请稍后" , true, { recallMsg: 5 });
         push今日运势(e)
       }
 }
@@ -75,7 +76,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function push今日运势(e, isAuto = 0) {
-  e.reply("正在为您渲染，请稍后" , true, { recallMsg: 5 });
+  
 
   // 随机选择一个URL或本地文件夹
   let imageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
@@ -176,9 +177,10 @@ async function push今日运势(e, isAuto = 0) {
         <p>仅供娱乐| 相信科学，请勿迷信 |仅供娱乐</p>
       </div>
       <div class="image" style="height:65rem; width: 65%; float: right; box-shadow: ${shadowc}; text-align: center;">
-        <img src=${imageUrl} style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle;"/>
+        <img src=${imageUrl} style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle; margin: 0; padding: 0;"/>
       </div>
-      </html>
+    </html>
+    
       `
     
     

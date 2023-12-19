@@ -7,12 +7,12 @@ import { dirname } from 'path';
 import schedule from 'node-schedule'
 
 const imageUrls = [
-    'https://t.mwm.moe/pc', //横图
+    '/home/gallery', //横图
     // 添加更多的 URL或本地文件夹...
 ];
 
 // 定时发送时间，采用 Cron 表达式
-const time = '0 30 7 * * ? '
+const time = '0 30 6 * * ?'
 
 /* 各位代表的意思 *-代表任意值 ？-不指定值，仅日期和星期域支持该字符。 （想了解更多，请自行搜索Cron表达式学习）
     *  *  *  *  *  *
@@ -27,8 +27,8 @@ const time = '0 30 7 * * ? '
 */
 
 // 指定定时发送的群号
-const groupList = ['123456','123456']
-
+// const groupList = ['123456','123456']
+const groupList = ["774780354"];
 /**
  * 开启定时推送的群号，填写格式如下
  * 单个群号填写如下：
@@ -38,7 +38,7 @@ const groupList = ['123456','123456']
  */
 
 // 是否开启定时推送
-const isAutoPush = false
+const isAutoPush = true
 
 autoTask()
 
@@ -51,13 +51,14 @@ export class TextMsg extends plugin {
             priority: 6,   // 插件优先度，数字越小优先度越高
             rule: [
                 {
-                    reg: '^#?算一卦$',   // 正则表达式,有关正则表达式请自行百度
+                    reg: '^#算一卦$',   // 正则表达式,有关正则表达式请自行百度
                     fnc: '算一卦'  // 执行方法
                 }
             ]
         })
     }
     async 算一卦(e) {
+        e.reply("正在为您测算，请稍后", true, { recallMsg: 5 });
         push算一卦(e)
     }
 
@@ -72,7 +73,7 @@ export class TextMsg extends plugin {
     // 执行方法1
     async function push算一卦(e, isAuto = 0) {
          // 引用回复
-         e.reply("正在为您测算，请稍后", true, { recallMsg: 5 });
+         
   
          // 随机选择一个URL或本地文件夹
          const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -185,7 +186,7 @@ export class TextMsg extends plugin {
        function autoTask() {
          if (isAutoPush) {
            schedule.scheduleJob(time, () => {
-             logger.info('[今日运势]：开始自动推送...')
+             logger.info('[算一卦]：开始自动推送...')
              for (let i = 0; i < groupList.length; i++) {
                let group = Bot.pickGroup(groupList[i])
                push算一卦(group, 1)
