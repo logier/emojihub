@@ -4,10 +4,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import schedule from 'node-schedule'
+import plugin from '../../lib/plugins/plugin.js'
+import common from '../../lib/common/common.js'
+import { segment } from 'oicq'
 
 const imageUrls = [
-    //'https://t.mwm.moe/mp', //横图
-    '/home/gallery',
+    'https://t.mwm.moe/mp', //横图
+    //'/home/gallery',
     // 添加更多的 URL或本地文件夹...
 ];
 
@@ -27,8 +30,8 @@ const time = '0 30 7 * * ?'
 */
 
 // 指定定时发送的群号
-const groupList = ['123456','123456']
-// const groupList = ["774780354"];
+const groupList = ['774780354']
+
 /**
  * 开启定时推送的群号，填写格式如下
  * 单个群号填写如下：
@@ -196,7 +199,7 @@ async function push今日运势(e, isAuto = 0) {
       }
     
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       e.reply('抱歉，生成图片时出现了错误。');
     } finally {
       if (browser) {

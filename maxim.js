@@ -261,32 +261,30 @@ async function generateHtml(e, content, source, html_style, img_style, quote_sty
     try {
         browser = await puppeteer.launch({headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
-
-        const html_style = `display: flex;justify-content: center;align-items: center;position: relative;`;
-        const img_style = `position: absolute; top: 0; left: 0; object-fit: cover;`;
-        const quote_style = `color: white;background-color: rgba(0, 0, 0, 0.7);padding: 5px;text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);text-align: center;width: 40%;display: flex;flex-direction: column;justify-content: center; border: 1px solid black;box-shadow: 5px 5px 5px 5px black; position: absolute; left: 0; top: 0; bottom: 0; ${blurStyle}`;
-        const content_style = `text-align: justify; font-size: 3vw; line-height: normal; text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);`;
-        const source_style = `text-align: right; font-size: 3vw; color: rgba(255, 255, 255, 0.7); transform: skewX(-15deg);`;
         
-        let Html = `
-        <html style="${html_style}">
-        <div class="img-container" style="${img_style}">
-          <img src="${imageUrl}" object-fit: cover;" />
+        
+        const Html = `
+        <html style="width: 1280px; height: 800px;">
+        <img src="${imageUrl}" style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: -1; backdrop-filter: blur(10px);" />
+        <div style="width:100%;height:100%;flex-direction:row-reverse;display:flex !important; backdrop-filter: blur(10px);">
+            <div style="height:100%;width:50%;align-items:center;display:flex !important;justify-content:center;">
+                <img src="${imageUrl}" style="max-height:95%;max-width:95%;box-shadow:5px 5px 5px 5px rgba(0, 0, 0, 0.13); border: 5px solid rgba(0, 0, 0, 0.5);"> 
+            </div> 
+            <div style="width:50%;height:100%;justify-content:center;display:flex !important;align-items:center;"> 
+                <div style="height:30%;width:30%;border:rgba(233, 231, 239, 1) solid 2px;border-radius:20px 20px 20px 20px;box-shadow:0px 0px 15px rgba(0, 0, 0, 0.3);background-color:rgba(255, 255, 255, 0.6);max-width:90%;max-height:90%;flex-direction:column;justify-content:center;display:flex !important;line-height:3em;width:80%;"> 
+                    <span style="font-size:1.5em;font-weight:bold;line-height:auto;text-align:left;padding:0 0 0 1%;text-indent:-5px;">『 ${content} 』</span>
+                    <span style="font-size:1.5em;text-align:right;font-style:italic;font-weight:lighter;padding:0 2% 0 0;">——${source}</span>
+                </div>
+            </div>
         </div>
-        <div class="quote" style="${quote_style}">
-          <div class="content" style="${content_style}">『${content}』</div>
-          <div class="source" style="${source_style}">——${source}</div>
-        </div>
-        </html>
-        `         
-    
-        await page.setContent(Html)
-    
-        // 获取图片容器元素
-        const imgContainerElement = await page.$('.img-container img');
+    </html>
+        `;
+        
+        await page.setContent(Html);
+        
+        // 对整个页面进行截图
+        const base64 = await page.screenshot({ encoding: "base64", fullPage: true })
 
-        // 对图片容器元素进行截图
-        const base64 = await imgContainerElement.screenshot({ encoding: "base64" });
 
         e.reply(segment.image(`base64://${base64}`))
         return true
