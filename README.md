@@ -81,7 +81,7 @@ curl -o "./plugins/example/maxim.js" "https://gitee.com/logier/emojihub/raw/main
 <img src="screenshot/一言设置.png" width="70%">
 
 图片支持本地文件夹和网络图片api
-如果没有图片可以去https://www.logier.icu找
+如果没有图片可以去https://www.logier.icu
 
 <br>
 <br>

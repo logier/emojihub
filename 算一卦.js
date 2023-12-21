@@ -10,7 +10,8 @@ import common from '../../lib/common/common.js'
 import { segment } from 'oicq'
 
 const imageUrls = [
-    '/home/gallery', //横图
+    'https://t.mwm.moe/mp', 
+    // '/home/gallery', 
     // 添加更多的 URL或本地文件夹...
 ];
 
@@ -30,8 +31,8 @@ const time = '0 30 6 * * ?'
 */
 
 // 指定定时发送的群号
-const groupList = ['123456','123456']
-// const groupList = ["774780354"];
+// const groupList = ['123456','123456']
+const groupList = [""];
 /**
  * 开启定时推送的群号，填写格式如下
  * 单个群号填写如下：
@@ -43,7 +44,7 @@ const groupList = ['123456','123456']
 // 是否开启定时推送
 const isAutoPush = false
 
-autoTask()
+autosuangua()
 
 export class TextMsg extends plugin {
     constructor() {
@@ -186,7 +187,7 @@ export class TextMsg extends plugin {
      
      
      
-       function autoTask() {
+       function autosuangua() {
          if (isAutoPush) {
            schedule.scheduleJob(time, () => {
              logger.info('[算一卦]：开始自动推送...')

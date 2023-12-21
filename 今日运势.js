@@ -10,7 +10,7 @@ import { segment } from 'oicq'
 
 const imageUrls = [
     'https://t.mwm.moe/mp', //横图
-    //'/home/gallery',
+    // '/home/gallery',
     // 添加更多的 URL或本地文件夹...
 ];
 
@@ -30,7 +30,7 @@ const time = '0 30 7 * * ?'
 */
 
 // 指定定时发送的群号
-const groupList = ['774780354']
+const groupList = ['']
 
 /**
  * 开启定时推送的群号，填写格式如下
@@ -43,7 +43,7 @@ const groupList = ['774780354']
 // 是否开启定时推送
 const isAutoPush = false
 
-autoTask()
+autoyunshi()
 
 
 // TextMsg可自行更改，其他照旧即可。
@@ -183,7 +183,6 @@ async function push今日运势(e, isAuto = 0) {
         <img src=${imageUrl} style="height: 100%; filter: ${lightcg}; overflow: hidden; display: inline-block; vertical-align: middle; margin: 0; padding: 0;"/>
       </div>
     </html>
-    
       `
     
     
@@ -213,7 +212,7 @@ async function push今日运势(e, isAuto = 0) {
 
 
 
-  function autoTask() {
+  function autoyunshi() {
     if (isAutoPush) {
       schedule.scheduleJob(time, () => {
         logger.info('[今日运势]：开始自动推送...')
