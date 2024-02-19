@@ -74,8 +74,15 @@ fs.readdir(currentDir, (err, files) => {
                 // 将JSON字符串写入文件
                 fs.writeFile('D:\\dev\\Miao-Yunzai\\plugins\\logier-plugin\\data\\emojiindex.json', data, (err) => {
                     if (err) throw err;
-                    console.log('Data written to index.json');
+                    console.log('Data written to D:\\dev\\Miao-Yunzai\\plugins\\logier-plugin\\data\\emojiindex.json');
                 });
+
+                // 将JSON字符串写入当前目录下的index.json文件
+                fs.writeFile(path.join(currentDir, 'index.json'), data, (err) => {
+                    if (err) throw err;
+                    console.log('Data written to index.json in the current directory');
+                });
+
             });
         }
     });
